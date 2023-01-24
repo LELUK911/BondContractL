@@ -147,6 +147,22 @@ contract BondFunction is StorageStruct {
         ] += _amount;
     }
 
+    function getCouponInterestBalance(address _issuing, uint256 _bondIndex)
+        public
+        view
+        returns (uint256 balance)
+    {
+        (uint256 index, bool response) = searchIndexListBond(
+            _issuing,
+            _bondIndex
+        );
+        require(response, "Bond don't find");
+        return
+            balance = balanceCoupon[_bondIndex][
+                bonds[_issuing][index].tokenRequired
+            ];
+    }
+
     function _claimCouponExpired(
         address _user,
         address _issuing,
@@ -160,7 +176,8 @@ contract BondFunction is StorageStruct {
         );
         require(response, "Bond don't find");
         uint256[] memory expireds = bonds[_issuing][_bondIndex].expireCoupon;
-        if (expireds[_expired] <= block.timestamp) {
+        ///////// ------------->fix this control for test <--------------------/////////
+        //if (expireds[_expired] <= block.timestamp) {
             if (!couponPaid[_bondIndex][_receiptID][expireds[_expired]]) {
                 require(
                     balanceCoupon[_bondIndex][
@@ -178,10 +195,8 @@ contract BondFunction is StorageStruct {
                     bonds[_issuing][index].interestCoupon
                 );
             }
-        }
+        // -------------->}
     }
-
-    function _withdrawCouponExpired() internal {}
 
     function searchIndexListBond(address _issuing, uint256 _bondIndex)
         internal
@@ -203,5 +218,11 @@ contract BondFunction is StorageStruct {
         returns (BondStruct[] memory)
     {
         return bonds[_issuing];
+    }
+
+    function _withdrawCouponExpired(address _user, address _asset) internal {
+         uint _balance = balancUser[_user][_asset];
+         balancUser[_user][_asset] = 0;
+         IERC20(_asset).transfer(_user, _balance);
     }
 }

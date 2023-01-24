@@ -96,7 +96,7 @@ contract("basicTestFunction", async (accounts) => {
 
     //console.log(inf);
   });
-  it("take me Receipt's list", async ()=>{
+  it("take me Receipt's list", async () => {
     //getListBondReceipts
     const bondCon = await CoreContract.deployed();
 
@@ -104,5 +104,58 @@ contract("basicTestFunction", async (accounts) => {
 
     // verify with plus cases
     //console.log(list.toString())
+  });
+  it("something can deposit found for interest (deposit can extend interest)", async () => {
+    const bondCon = await CoreContract.deployed();
+    const usd = await MyUsd.deployed();
+
+    await usd.approve(bondCon.address, "20");
+    await bondCon.depositInterestCoupon(account, "0", "20");
+
+    const balanceInterest = await bondCon.getCouponInterestBalance(
+      account,
+      "0"
+    );
+
+    assert.equal(
+      "20",
+      balanceInterest.toString(),
+      "Check function deposit interest and getBalance"
+    );
+  });
+  it("Claim Coupon'interests (Timestamp fixed manually for test)",async ()=>{
+    const bondCon = await CoreContract.deployed();
+
+  
+    await bondCon.claimCouponExpired(account,"0","1","0")
+
+
+    const balanceInterest = await bondCon.getCouponInterestBalance(
+      account,
+      "0"
+    );
+
+    assert.equal(
+      "10",
+      balanceInterest.toString(),
+      "Check function deposit interest and getBalance"
+    );
+
+  })
+  it("user can withdraw assets next claim" , async ()=>{
+    //withdrawCouponInterestAsset
+    const bondCon = await CoreContract.deployed();
+    const usd = await MyUsd.deployed();
+
+    const balanceBefore = await usd.balanceOf(account);
+
+    await bondCon.withdrawCouponInterestAsset(usd.address)
+
+    const balanceAfter = await usd.balanceOf(account);
+
+    assert.equal(+(balanceAfter),+(balanceAfter)+10)
+
+
+
   })
 });

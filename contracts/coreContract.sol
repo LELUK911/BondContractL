@@ -32,6 +32,29 @@ contract CoreContract is BondFunction ,DepositWithdrawFunction{
         _buyBond(msg.sender, _amount, _issuing, _bondIndex);
     }
 
+     function depositInterestCoupon(
+        address _issuing,
+        uint256 _bondIndex,
+        uint256 _amount
+    ) external {
+
+        _depositInterestCoupon(_issuing, _bondIndex, _amount);
+    }
+
+
+    function claimCouponExpired(
+        address _issuing,
+        uint256 _bondIndex,
+        uint256 _receiptID,
+        uint256 _expired
+    ) external {
+        _claimCouponExpired(msg.sender, _issuing, _bondIndex, _receiptID, _expired);
+    }
+
+    function withdrawCouponInterestAsset(address _asset) external {
+        _withdrawCouponExpired(msg.sender, _asset);
+    } 
+
 }
 
 
